@@ -48,6 +48,12 @@ func (c *MdiCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.Com
 		c.com.List(msg)
 	case "get":
 		c.com.Get(msg)
+	case "delete":
+		c.com.Delete(msg)
+	case "new":
+		c.com.New(msg)
+	case "edit":
+		c.com.Edit(msg)
 	default:
 	}
 }

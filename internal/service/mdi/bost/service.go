@@ -2,13 +2,14 @@ package bost
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/mozgunovdm/omp-bot/internal/model/mdi"
 )
 
 var ErrDataIDRange = errors.New("id out of range data")
-var ErrEmptyModel = errors.New("empty list")
-var ErrPosOutRange = errors.New("position out of range")
+var ErrEmptyModel = errors.New("Список продуктов пуст")
+var ErrPosOutRange = errors.New("Конец списка")
 
 type BostService interface {
 	Describe(bostID uint64) (*mdi.Bost, error)
@@ -35,13 +36,14 @@ func (d *DummyBostService) List(cursor uint64, limit uint64) ([]mdi.Bost, error)
 	if len(mdi.DataModel) == 0 {
 		return nil, ErrEmptyModel
 	}
-	if int(cursor) >= len(mdi.DataModel) {
+	pos := cursor - 1
+	if int(pos) >= len(mdi.DataModel) {
 		return nil, ErrPosOutRange
 	}
-	if int(cursor+limit) >= len(mdi.DataModel) {
-		return mdi.DataModel[cursor:], nil
+	if int(pos+limit) >= len(mdi.DataModel) {
+		return mdi.DataModel[pos:], nil
 	}
-	return mdi.DataModel[cursor : cursor+limit], nil
+	return mdi.DataModel[pos : pos+limit], nil
 }
 
 func (d *DummyBostService) Create(bost mdi.Bost) (uint64, error) {
@@ -50,10 +52,13 @@ func (d *DummyBostService) Create(bost mdi.Bost) (uint64, error) {
 }
 
 func (d *DummyBostService) Update(bostID uint64, bost mdi.Bost) error {
+	fmt.Println(bost)
 	if bostID < 1 || bostID > uint64(len(mdi.DataModel)) {
 		return ErrDataIDRange
 	}
-	mdi.DataModel[bostID-1] = bost
+	fmt.Println(mdi.DataModel[bostID-1])
+	mdi.DataModel[bostID-1].Name = bost.Name
+	fmt.Println(mdi.DataModel[bostID-1])
 	return nil
 }
 
