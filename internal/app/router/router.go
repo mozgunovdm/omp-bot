@@ -5,8 +5,9 @@ import (
 	"runtime/debug"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/commands/demo"
-	"github.com/ozonmp/omp-bot/internal/app/path"
+	"github.com/mozgunovdm/omp-bot/internal/app/commands/demo"
+	"github.com/mozgunovdm/omp-bot/internal/app/commands/mdi"
+	"github.com/mozgunovdm/omp-bot/internal/app/path"
 )
 
 type Commander interface {
@@ -20,6 +21,7 @@ type Router struct {
 
 	// demoCommander
 	demoCommander Commander
+	mdiCommander  Commander
 	// user
 	// access
 	// buy
@@ -55,6 +57,7 @@ func NewRouter(
 		bot: bot,
 		// demoCommander
 		demoCommander: demo.NewDemoCommander(bot),
+		mdiCommander:  mdi.NewMdiCommander(bot),
 		// user
 		// access
 		// buy
@@ -106,6 +109,8 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 	}
 
 	switch callbackPath.Domain {
+	case "mdi":
+		c.mdiCommander.HandleCallback(callback, callbackPath)
 	case "demo":
 		c.demoCommander.HandleCallback(callback, callbackPath)
 	case "user":
@@ -166,7 +171,6 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 func (c *Router) handleMessage(msg *tgbotapi.Message) {
 	if !msg.IsCommand() {
 		c.showCommandFormat(msg)
-
 		return
 	}
 
@@ -177,6 +181,8 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 	}
 
 	switch commandPath.Domain {
+	case "mdi":
+		c.mdiCommander.HandleCommand(msg, commandPath)
 	case "demo":
 		c.demoCommander.HandleCommand(msg, commandPath)
 	case "user":
