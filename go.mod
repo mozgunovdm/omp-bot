@@ -1,4 +1,4 @@
-module github.com/ozonmp/omp-bot
+module github.com/mozgunovdm/omp-bot
 
 go 1.17
 
